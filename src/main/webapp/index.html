@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+		<link href="css/style.css" rel="stylesheet" type="text/css"></link>
+		<script src="js/jquery-2.0.2.js"></script>
+	</head>
+	<body>
+		<div class="heading">
+			<h2>Photo Vault Pre Scaler</h2>
+			<div>Provide a service to let a user upload a photograph which is then processed
+				and the result returned to the user.
+			</div>
+		</div>
+		
+		<div class="panel">
+			<h3>Upload details</h3>
+			<form>
+				<div>
+				<label>
+					Contact
+					<input type="text" name="email" placeholder="Enter your address"/>
+				</label>
+				</div>
+
+				<div>
+				<label>
+					From your filesystem:
+					<input id="file" type="file" name="file"></input>
+				</label>
+				</div>
+
+				<button type="submit" value="Submit">Submit</button>
+			</form>
+		</div>
+
+		<script>
+			var files;
+
+			$('input#file').on('change', prepareUpload);
+
+			function prepareUpload(event) {
+				files = event.target.files;
+				console.log("files: " + JSON.stringify(files));
+			}
+
+			$('form').submit(function(event){
+				event.preventDefault();
+				var data = new FormData();
+
+				$.each(files, function(key,value){
+					data.append(key,value)
+				});
+
+				console.log("submitting: " + JSON.stringify(data));
+			});
+		</script>
+
+	</body>
+</html>
+<!--
+  vim: tabstop=2
+-->
