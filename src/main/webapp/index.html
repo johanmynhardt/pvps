@@ -11,7 +11,7 @@
 				and the result returned to the user.
 			</div>
 		</div>
-		
+
 		<div class="panel">
 			<h3>Upload details</h3>
 			<form>
@@ -31,6 +31,9 @@
 
 				<button type="submit" value="Submit">Submit</button>
 			</form>
+
+      <div id="uploadResult">
+      </div>
 		</div>
 
 		<script>
@@ -45,13 +48,25 @@
 
 			$('form').submit(function(event){
 				event.preventDefault();
-				var data = new FormData();
 
-				$.each(files, function(key,value){
-					data.append(key,value)
-				});
+        var formData = new FormData();
+        var file = files[0];
 
-				console.log("submitting: " + JSON.stringify(data));
+        formData.append("file", file);
+
+        $.ajax({
+          url: "r/file/upload",
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function() {
+            $('#uploadResult').html("upload complete!");
+          },
+          error: function(result) {
+            $('#uploadResult').html("upload failed: <code>HTTP/" + result.status + ", " + result.statusText + "</code>");
+          }
+        });
 			});
 		</script>
 
