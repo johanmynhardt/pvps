@@ -1,53 +1,59 @@
 <!doctype html>
 <html>
-  <head>
-		<link href="css/style.css" rel="stylesheet" type="text/css"></link>
-		<script src="js/jquery-2.0.2.js"></script>
-	</head>
-	<body>
-		<div class="heading">
-			<h2>Photo Vault Pre Scaler</h2>
-			<div>Provide a service to let a user upload a photograph which is then processed
-				and the result returned to the user.
-			</div>
-		</div>
+<head>
+    <link href="css/style.css" rel="stylesheet" type="text/css"></link>
+    <script src="js/jquery-2.0.2.js"></script>
+</head>
+<body>
+<div class="heading">
+    <h2>Photo Vault Pre Scaler</h2>
 
-		<div class="panel">
-			<h3>Upload details</h3>
-			<form>
-				<div>
-				<label>
-					Contact
-					<input type="text" name="email" placeholder="Enter your address"/>
-				</label>
-				</div>
+    <div>Provide a service to let a user upload a photograph which is then processed
+        and the result returned to the user.
+    </div>
+</div>
 
-				<div>
-				<label>
-					From your filesystem:
-					<input id="file" type="file" name="file"></input>
-				</label>
-				</div>
+<div class="panel">
+    <h3>Upload details</h3>
 
-				<button type="submit" value="Submit">Submit</button>
-			</form>
+    <form>
+        <!--<div>
+            <label>
+                Contact
+                <input type="text" name="email" placeholder="Enter your address"/>
+            </label>
+        </div>-->
 
-      <div id="uploadResult">
-      </div>
-		</div>
+        <div>
+            <label>
+                From your filesystem:
+                <input id="file" type="file" name="file"></input>
+            </label>
+        </div>
 
-		<script>
-			var files;
+        <button type="submit" value="Submit">Submit</button>
+    </form>
 
-			$('input#file').on('change', prepareUpload);
+    <div id="uploadResult">
+    </div>
 
-			function prepareUpload(event) {
-				files = event.target.files;
-				console.log("files: " + JSON.stringify(files));
-			}
+    <div id="resizedImage">
 
-			$('form').submit(function(event){
-				event.preventDefault();
+    </div>
+</div>
+
+<script>
+    var files;
+
+    $('input#file').on('change', prepareUpload);
+
+    function prepareUpload(event) {
+        files = event.target.files;
+        console.log("files: " + JSON.stringify(files));
+    }
+
+    $('form').submit(function (event) {
+        event.preventDefault();
 
         var formData = new FormData();
         var file = files[0];
@@ -55,22 +61,24 @@
         formData.append("file", file);
 
         $.ajax({
-          url: "r/file/upload",
-          type: "POST",
-          data: formData,
-          processData: false,
-          contentType: false,
-          success: function() {
-            $('#uploadResult').html("upload complete!");
-          },
-          error: function(result) {
-            $('#uploadResult').html("upload failed: <code>HTTP/" + result.status + ", " + result.statusText + "</code>");
-          }
+            url: "r/file/upload",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                $('#uploadResult').html("upload complete!");
+                console.log("uploaded images: " + result.properties.images);
+                $('#resizedImage').html("<div><img src='r/file/" + result.properties.images[0] +"/view'/>");
+            },
+            error: function (result) {
+                $('#uploadResult').html("upload failed: <code>HTTP/" + result.status + ", " + result.statusText + "</code>");
+            }
         });
-			});
-		</script>
+    });
+</script>
 
-	</body>
+</body>
 </html>
 <!--
   vim: tabstop=2

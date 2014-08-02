@@ -1,0 +1,19 @@
+{
+  "name": "pvps-web",
+  "version": "0.9.0",
+  "homepage": "https://github.com/johanmynhardt/pvps",
+  "authors": [
+    "Johan Mynhardt <johanmynhardt@gmail.com>"
+  ],
+  "description": "Image Pre-scaler for Photovaultonline",
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
