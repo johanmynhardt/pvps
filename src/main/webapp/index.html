@@ -56,6 +56,9 @@
     $('form').submit(function (event) {
         event.preventDefault();
 
+        $('#uploadResult').html("Uploading and processing...");
+        $('#resizedImage').html("");
+
         var formData = new FormData();
         var file = files[0];
 
