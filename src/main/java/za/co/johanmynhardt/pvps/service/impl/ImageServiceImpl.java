@@ -24,7 +24,7 @@ public class ImageServiceImpl implements ImageService {
 		File result = cacheInputImage(inputStream);
 
 		IMOperation operation = new IMOperation();
-		operation.extent(500);
+		operation.define("jpeg:extent=500kb");
 		operation.bordercolor("white");
 		operation.border(20, 20);
 		operation.addImage(result.toString());
