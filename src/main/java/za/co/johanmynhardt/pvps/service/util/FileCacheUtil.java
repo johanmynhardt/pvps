@@ -24,7 +24,7 @@ public class FileCacheUtil {
 		FileOutputStream fileOutputStream = new FileOutputStream(result);
 
 		byte[] buff = new byte[1024];
-		int len = 0;
+		int len;
 		while ((len = inputStream.read(buff)) > -1) {
 			fileOutputStream.write(buff, 0, len);
 		}

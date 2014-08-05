@@ -4,42 +4,47 @@
     <link href="bower_components/foundation/css/foundation.css" rel="stylesheet" type="text/css"/>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/foundation/js/foundation.min.js"></script>
+    <style>
+        #resizedImage {
+            text-align: center;
+            border: 1px solid #000000;
+            background-color: #000000;
+            padding: 1em;
+            display: none;
+        }
+    </style>
 </head>
-<body>
-<div class="heading">
+<body class="row">
+
+<div class="panel">
     <h2>Photo Vault Pre Scaler</h2>
 
     <div>Provide a service to let a user upload a photograph which is then processed
         and the result returned to the user.
     </div>
-</div>
 
-<div class="panel">
-    <h3>Upload details</h3>
+    <hr/>
 
-    <form>
-        <!--<div>
-            <label>
-                Contact
-                <input type="text" name="email" placeholder="Enter your address"/>
-            </label>
-        </div>-->
+    <div>
+        <h3>Upload details</h3>
 
-        <div>
-            <label>
-                From your filesystem:
-                <input id="file" type="file" name="file"></input>
-            </label>
-        </div>
+        <form>
+            <div>
+                <label>
+                    From your filesystem:
+                    <input id="file" type="file" name="file"></input>
+                </label>
+            </div>
 
-        <button type="submit" value="Submit">Submit</button>
-    </form>
-
-    <div id="uploadResult">
+            <button type="submit" value="Submit">Submit</button>
+        </form>
     </div>
 
-    <div id="resizedImage">
+    <div>
+        <h3>Upload result</h3>
+        <div id="uploadResult"></div>
 
+        <div id="resizedImage"></div>
     </div>
 </div>
 
@@ -56,8 +61,8 @@
     $('form').submit(function (event) {
         event.preventDefault();
 
-        $('#uploadResult').html("Uploading and processing...");
-        $('#resizedImage').html("");
+        $('#uploadResult').html('<img src="img/loading.gif"/>');
+        $('#resizedImage').html("").css('display', 'none');
 
         var formData = new FormData();
         var file = files[0];
@@ -73,7 +78,8 @@
             success: function (result) {
                 $('#uploadResult').html("upload complete!");
                 console.log("uploaded images: " + result.properties.images);
-                $('#resizedImage').html("<div><img src='r/file/" + result.properties.images[0] +"/view'/>");
+                $('#resizedImage').html("<div><img src='r/file/" + result.properties.images[0] + "/view'/>");
+                $('#resizedImage').css('display', 'inherit');
             },
             error: function (result) {
                 $('#uploadResult').html("upload failed: <code>HTTP/" + result.status + ", " + result.statusText + "</code>");
