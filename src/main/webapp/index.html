@@ -1,93 +1,152 @@
 <!doctype html>
-<html>
+<html ng-app="app">
 <head>
+    <title>Photovaultonline Pre-scaling</title>
     <link href="bower_components/foundation/css/foundation.css" rel="stylesheet" type="text/css"/>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/foundation/js/foundation.min.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
     <style>
         #resizedImage {
             text-align: center;
-            border: 1px solid #000000;
-            background-color: #000000;
+            border: 1px solid #333333;
+            background-color: #333333;
             padding: 1em;
-            display: none;
+        }
+
+        #working {
+            text-align: center;
+            padding: 3em;
         }
     </style>
 </head>
-<body class="row">
+<body class="row" ng-controller="ApplicationController">
 
-<div class="panel">
-    <h2>Photo Vault Pre Scaler</h2>
+<div class="row panel">
+    <h2>Photovaultonline Pre-scaling</h2>
 
-    <div>Provide a service to let a user upload a photograph which is then processed
-        and the result returned to the user.
+    <div>
+        <p>Provide a free service to allow a user submit a photograph
+                for resizing according to PSSA generic standards.</p>
+        <p>
+            Resulting image is within 1024px &times; 768px constraints, less than or equal to 500Kb.
+        </p>
     </div>
 
     <hr/>
 
-    <div>
+    <div ng-hide="displayResult()">
         <h3>Upload details</h3>
 
-        <form>
-            <div>
-                <label>
-                    From your filesystem:
-                    <input id="file" type="file" name="file"></input>
-                </label>
+        <form ng-model="fm" novalidate="novalidate">
+            <div class="row collapse">
+                <div class="expand">
+                        <input id="file" type="file" name="file"
+                               class="button"
+                               ng-model="file"
+                               ng-hide="working"
+                               onchange="angular.element(this).scope().change(this)"/>
+                </div>
+            </div>
+            <div class="expand">
+                <button class="button expand" type="submit" ng-click="submit()" ng-show="canUpload()">Submit</button>
             </div>
 
-            <button type="submit" value="Submit">Submit</button>
         </form>
     </div>
 
-    <div>
+    <div id="working" ng-show="working">
+        <img src="img/loading.gif"/>
+    </div>
+
+    <div ng-show="displayResult()">
         <h3>Upload result</h3>
+        <a ng-click="reset()" class="button expand">Prepare Another</a>
+
         <div id="uploadResult"></div>
 
-        <div id="resizedImage"></div>
+        <div id="resizedImage">
+            <img ng-src="{{ resizedImage }}"/>
+        </div>
+
+        <a href="{{downloadLocation}}" ng-display="{{downloadLocation}}">Download</a>
     </div>
 </div>
 
 <script>
-    var files;
 
-    $('input#file').on('change', prepareUpload);
+    var app = angular.module('app', []);
+    var appController = app.controller('ApplicationController', function ($scope, $log, $rootScope) {
+        $scope.resizedImage = null;
+        $scope.downloadLocation = null;
+        $scope.working = false;
 
-    function prepareUpload(event) {
-        files = event.target.files;
-        console.log("files: " + JSON.stringify(files));
-    }
+        $scope.files = [];
 
-    $('form').submit(function (event) {
-        event.preventDefault();
-
-        $('#uploadResult').html('<img src="img/loading.gif"/>');
-        $('#resizedImage').html("").css('display', 'none');
-
-        var formData = new FormData();
-        var file = files[0];
-
-        formData.append("file", file);
-
-        $.ajax({
-            url: "r/file/upload",
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (result) {
-                $('#uploadResult').html("upload complete!");
-                console.log("uploaded images: " + result.properties.images);
-                $('#resizedImage').html("<div><img src='r/file/" + result.properties.images[0] + "/view'/>");
-                $('#resizedImage').css('display', 'inherit');
-            },
-            error: function (result) {
-                $('#uploadResult').html("upload failed: <code>HTTP/" + result.status + ", " + result.statusText + "</code>");
+        $scope.change = function (event) {
+            $scope.files = [];
+            for (var i = 0; i < event.files.length; i++) {
+                $scope.files.push(event.files[i]);
             }
-        });
+
+            $scope.$apply();
+        };
+
+        $scope.canUpload = function () {
+            return $scope.files.length > 0 && !$scope.working;
+        };
+
+        $scope.displayResult = function () {
+            return $scope.resizedImage != null;
+        };
+
+        $scope.submit = function () {
+            $scope.working = true;
+            var formData = new FormData();
+            var file = $scope.files[0];
+
+            formData.append("file", file);
+
+            $.ajax({
+                url: "r/file/upload",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    $scope.resizedImage = 'r/file/' + result.properties.images[0] + '/view';
+                    $scope.downloadLocation = 'r/file/' + result.properties.images[0] + '/download';
+                    $scope.working = false;
+                    $scope.$apply();
+                },
+                error: function (result) {
+                    $scope.working=false;
+                    $('#uploadResult').html("upload failed: <code>HTTP/" + result.status + ", " + result.statusText + "</code>");
+                }
+            });
+        };
+
+        $scope.reset = function() {
+            $scope.files = [];
+            $scope.resizedImage = null;
+            $scope.downloadLocation = null;
+            $scope.working = false;
+        }
     });
 </script>
+<div class="row panel">
+    <small>
+        <strong>Disclaimer:</strong>
 
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.<br/>
+        <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache v2.0</a>
+    </small>
+
+</div>
 </body>
 </html>
 <!--
