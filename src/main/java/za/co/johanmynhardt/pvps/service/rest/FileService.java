@@ -34,6 +34,8 @@ import za.co.johanmynhardt.pvps.service.impl.ImageServiceImpl;
 import za.co.johanmynhardt.pvps.service.model.JsonResponse;
 import za.co.johanmynhardt.pvps.service.util.FileCacheUtil;
 
+import static java.lang.String.format;
+
 @Path("/file")
 public class FileService {
 	private static Logger logger = Logger.getLogger(FileService.class.getName());
@@ -77,7 +79,8 @@ public class FileService {
 						.build()
 		);
 
-		String json = gson.toJson(response, new TypeToken<JsonResponse>(){}.getType());
+		String json = gson.toJson(response, new TypeToken<JsonResponse>() {
+		}.getType());
 
 		logger.log(Level.INFO, "Returning JsonResponse: {0}", json);
 
@@ -87,10 +90,23 @@ public class FileService {
 	@GET
 	@Path("/{imageId}/view")
 	@Produces({"image/*", MediaType.TEXT_PLAIN})
-	public Response viewImage(@PathParam("imageId")String imageId) {
+	public Response viewImage(@PathParam("imageId") String imageId) {
 		try {
 			File response = FileCacheUtil.fileFromId(Optional.of(imageId));
 			return Response.ok(response, "image/jpg").build();
+		} catch (FileNotFoundException e) {
+			logger.warning(e.toString());
+			return Response.status(Response.Status.NOT_FOUND).entity("The requested item is not found").build();
+		}
+	}
+
+	@GET
+	@Path("/{imageId}/download")
+	@Produces({"image/*", MediaType.TEXT_PLAIN})
+	public Response downloadImage(@PathParam("imageId") String imageId) {
+		try {
+			File response = FileCacheUtil.fileFromId(Optional.of(imageId));
+			return Response.ok(response, "image/jpg").header("Content-Disposition", format("attachment; filename=%s.jpg", imageId)).build();
 		} catch (FileNotFoundException e) {
 			logger.warning(e.toString());
 			return Response.status(Response.Status.NOT_FOUND).entity("The requested item is not found").build();
@@ -110,7 +126,7 @@ public class FileService {
 						String filename = null;
 						for (String value : values) {
 							if (value.startsWith("filename=")) {
-								filename = value.split("filename=",2)[1];
+								filename = value.split("filename=", 2)[1];
 								if (filename.contains("\"")) {
 									filename = filename.replaceAll("\"", "");
 								}
