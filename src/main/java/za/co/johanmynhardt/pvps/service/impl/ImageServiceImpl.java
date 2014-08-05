@@ -26,7 +26,7 @@ public class ImageServiceImpl implements ImageService {
 		IMOperation operation = new IMOperation();
 		operation.define("jpeg:extent=500kb");
 		operation.bordercolor("white");
-		operation.border(20, 20);
+		operation.border(2, 2);
 		operation.addImage(result.toString());
 		operation.resize(1024, 768, '>');
 		operation.addImage(result.toString());
