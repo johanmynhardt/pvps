@@ -17,6 +17,8 @@
     "tests"
   ],
   "dependencies":{
-      "foundation": "5.3.3"
+      "foundation": "5.3.3",
+      "angular":"1.2.21"
+
   }
 }
