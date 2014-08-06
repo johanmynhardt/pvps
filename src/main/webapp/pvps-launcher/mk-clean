@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+EXT_NAME=pvps-launcher
+
+if [ -e ./$EXT_NAME/lib/main.js ]; then
+	rm -v ./$EXT_NAME/lib/main.js
+fi
+
+if [ -e ./$EXT_NAME.crx ]; then
+	rm -v ./$EXT_NAME.crx
+fi

@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+command -v /opt/google/chrome-beta/chrome >/dev/null 2>&1 || { echo >&2 "chrome is required but not installed. Aborting. Ensure /opt/google/chrome-beta/chrome is available"; exit 1; }
+
+BASE_URL_PROD="http://johanmynhardt.co.za/pvps"
+BASE_URL_DEV="http://localhost:8080/pvps"
+
+
+DIST_DIR=pvps-launcher
+DIST_PACK=$DIST_DIR.crx
+DIST_KEY=$DIST_DIR.pem
+
+if [ -z "$DEV" ];
+	then
+		BASE_URL=$BASE_URL_PROD
+		echo BASE_URL not set, using prod value: $BASE_URL
+	else
+		BASE_URL=$BASE_URL_DEV
+fi
+
+
+sed -e "s#var baseUrl.*#var baseUrl = \"$BASE_URL\"\\;#" $DIST_DIR/lib/main-template.js > $DIST_DIR/lib/main.js
+
+if [ -e $DIST_PACK ]; then
+	rm -v $DIST_PACK;
+fi
+
+EXT_PATH=`pwd`/$DIST_DIR
+KEY_PATH=`pwd`/$DIST_KEY
+
+CHROME=/opt/google/chrome-beta/chrome
+if [ -e $DIST_KEY ]; then
+	echo "USING KEY: $KEY_PATH"
+	$CHROME --pack-extension=$EXT_PATH --pack-extension-key=$KEY_PATH
+else
+	$CHROME --pack-extension=$EXT_PATH
+fi
