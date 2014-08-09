@@ -6,6 +6,7 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/foundation/js/foundation.min.js"></script>
     <script src="bower_components/angular/angular.min.js"></script>
+    <script src="js/controller.js"></script>
     <style>
         #resizedImage {
             text-align: center;
@@ -22,119 +23,65 @@
 </head>
 <body class="row" ng-controller="ApplicationController">
 
+<p></p>
+
 <div class="row panel">
-    <h2>Photovaultonline Pre-scaling</h2>
+    <h1>Photovaultonline Pre-scaling</h1>
 
-    <div>
-        <p>Provide a free service to allow a user submit a photograph
-                for resizing according to PSSA generic standards.</p>
-        <p>
-            Resulting image is within 1024px &times; 768px constraints, less than or equal to 500Kb.
-        </p>
-    </div>
+    <p>
+        This is a <em>free</em> service to allow a user to submit a photograph
+        for resizing images to the  according to the
+        <span data-tooltip class="has-tip" title="Resulting image is within 1024px &times; 768px constraints and less than or equal to 500 Kilobytes.">generic standards</span> set out by <a href="http://pssa.co.za/" rel="nofollow">PSSA</a>.
+        <br/>
+        The resulting image can then be uploaded to <a href="http://www.photovaultonline.com/">photovaultonline.com</a>
+    </p>
+</div>
 
-    <hr/>
+<div ng-hide="displayResult()" class="row">
+    <h2>Upload details</h2>
 
-    <div ng-hide="displayResult()">
-        <h3>Upload details</h3>
-
-        <form ng-model="fm" novalidate="novalidate">
-            <div class="row collapse">
-                <div class="expand">
-                        <input id="file" type="file" name="file"
-                               class="button"
-                               ng-model="file"
-                               ng-hide="working"
-                               onchange="angular.element(this).scope().change(this)"/>
-                </div>
-            </div>
+    <form ng-model="fm" novalidate="novalidate">
+        <div class="row collapse">
             <div class="expand">
-                <button class="button expand" type="submit" ng-click="submit()" ng-show="canUpload()">Submit</button>
+                <input id="file" type="file" name="file"
+                       class="button"
+                       ng-model="file"
+                       ng-hide="working"
+                       onchange="angular.element(this).scope().change(this)"/>
             </div>
-
-        </form>
-    </div>
-
-    <div id="working" ng-show="working">
-        <img src="img/loading.gif"/>
-    </div>
-
-    <div ng-show="displayResult()">
-        <h3>Upload result</h3>
-        <a ng-click="reset()" class="button expand">Prepare Another</a>
-
-        <div id="uploadResult"></div>
-
-        <div id="resizedImage">
-            <img ng-src="{{ resizedImage }}"/>
+        </div>
+        <div class="expand">
+            <button class="button expand" type="submit" ng-click="submit()" ng-show="canUpload()">Submit</button>
         </div>
 
-        <a href="{{downloadLocation}}" ng-display="{{downloadLocation}}">Download</a>
+    </form>
+</div>
+
+<div id="working" ng-show="working">
+    <img src="img/loading.gif"/>
+</div>
+
+
+<div ng-show="displayResult()" class="row">
+    <h2>Upload result</h2>
+
+    <div class="row collapse">
+        <div class="small-9 columns">
+            <a ng-click="reset()" class="button expand">&leftarrow; Prepare Another</a>
+        </div>
+        <div class="small-3 columns">
+            <a href="{{downloadLocation}}" ng-display="{{downloadLocation}}"
+               class="button expand alert">&blacktriangledown; Download</a>
+        </div>
+
+    </div>
+
+    <div id="resizedImage">
+        <img ng-src="{{ resizedImage }}"/>
     </div>
 </div>
 
-<script>
-
-    var app = angular.module('app', []);
-    var appController = app.controller('ApplicationController', function ($scope, $log, $rootScope) {
-        $scope.resizedImage = null;
-        $scope.downloadLocation = null;
-        $scope.working = false;
-
-        $scope.files = [];
-
-        $scope.change = function (event) {
-            $scope.files = [];
-            for (var i = 0; i < event.files.length; i++) {
-                $scope.files.push(event.files[i]);
-            }
-
-            $scope.$apply();
-        };
-
-        $scope.canUpload = function () {
-            return $scope.files.length > 0 && !$scope.working;
-        };
-
-        $scope.displayResult = function () {
-            return $scope.resizedImage != null;
-        };
-
-        $scope.submit = function () {
-            $scope.working = true;
-            var formData = new FormData();
-            var file = $scope.files[0];
-
-            formData.append("file", file);
-
-            $.ajax({
-                url: "r/file/upload",
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (result) {
-                    $scope.resizedImage = 'r/file/' + result.properties.images[0] + '/view';
-                    $scope.downloadLocation = 'r/file/' + result.properties.images[0] + '/download';
-                    $scope.working = false;
-                    $scope.$apply();
-                },
-                error: function (result) {
-                    $scope.working=false;
-                    $('#uploadResult').html("upload failed: <code>HTTP/" + result.status + ", " + result.statusText + "</code>");
-                }
-            });
-        };
-
-        $scope.reset = function() {
-            $scope.files = [];
-            $scope.resizedImage = null;
-            $scope.downloadLocation = null;
-            $scope.working = false;
-        }
-    });
-</script>
-<div class="row panel">
+<div class="row panel callout">
     <small>
         <strong>Disclaimer:</strong>
 
@@ -145,8 +92,8 @@
         limitations under the License.<br/>
         <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache v2.0</a>
     </small>
-
 </div>
+
 </body>
 </html>
 <!--
