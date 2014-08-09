@@ -26,28 +26,28 @@
 <p></p>
 
 <div class="row panel">
-    <h2>Photovaultonline Pre-scaling</h2>
+    <h1>Photovaultonline Pre-scaling</h1>
 
-    <div>
-        <p>Provide a free service to allow a user submit a photograph
-                for resizing according to PSSA generic standards.</p>
-        <p>
-            Resulting image is within 1024px &times; 768px constraints, less than or equal to 500Kb.
-        </p>
-    </div>
+    <p>
+        This is a <em>free</em> service to allow a user to submit a photograph
+        for resizing images to the  according to the
+        <span data-tooltip class="has-tip" title="Resulting image is within 1024px &times; 768px constraints and less than or equal to 500 Kilobytes.">generic standards</span> set out by <a href="http://pssa.co.za/" rel="nofollow">PSSA</a>.
+        <br/>
+        The resulting image can then be uploaded to <a href="http://www.photovaultonline.com/">photovaultonline.com</a>
+    </p>
 </div>
 
 <div ng-hide="displayResult()" class="row">
-    <h3>Upload details</h3>
+    <h2>Upload details</h2>
 
     <form ng-model="fm" novalidate="novalidate">
         <div class="row collapse">
             <div class="expand">
-                    <input id="file" type="file" name="file"
-                           class="button"
-                           ng-model="file"
-                           ng-hide="working"
-                           onchange="angular.element(this).scope().change(this)"/>
+                <input id="file" type="file" name="file"
+                       class="button"
+                       ng-model="file"
+                       ng-hide="working"
+                       onchange="angular.element(this).scope().change(this)"/>
             </div>
         </div>
         <div class="expand">
@@ -63,13 +63,15 @@
 
 
 <div ng-show="displayResult()" class="row">
-    <h3>Upload result</h3>
+    <h2>Upload result</h2>
+
     <div class="row collapse">
         <div class="small-9 columns">
             <a ng-click="reset()" class="button expand">&leftarrow; Prepare Another</a>
         </div>
         <div class="small-3 columns">
-            <a href="{{downloadLocation}}" ng-display="{{downloadLocation}}" class="button expand alert">&blacktriangledown; Download</a>
+            <a href="{{downloadLocation}}" ng-display="{{downloadLocation}}"
+               class="button expand alert">&blacktriangledown; Download</a>
         </div>
 
     </div>
