@@ -38,6 +38,9 @@ import static java.lang.String.format;
 
 @Path("/file")
 public class FileService {
+	public static final String IMAGE_ID = "imageId";
+	public static final String IMAGE_JPG = "image/jpg";
+	public static final String CONTENT_DISPOSITION = "Content-Disposition";
 	private static Logger logger = Logger.getLogger(FileService.class.getName());
 
 	private ImageService imageService = new ImageServiceImpl();
@@ -61,7 +64,6 @@ public class FileService {
 			for (InputStream inputStream : attachmentMap.values()) {
 				Optional<String> imageId = imageService.resizeImage(inputStream);
 				if (imageId.isPresent()) {
-					System.out.println("fileId = " + imageId.get());
 					uploadedImages.add(imageId.get());
 				}
 			}
@@ -90,10 +92,10 @@ public class FileService {
 	@GET
 	@Path("/{imageId}/view")
 	@Produces({"image/*", MediaType.TEXT_PLAIN})
-	public Response viewImage(@PathParam("imageId") String imageId) {
+	public Response viewImage(@PathParam(IMAGE_ID) String imageId) {
 		try {
 			File response = FileCacheUtil.fileFromId(Optional.of(imageId));
-			return Response.ok(response, "image/jpg").build();
+			return Response.ok(response, IMAGE_JPG).build();
 		} catch (FileNotFoundException e) {
 			logger.warning(e.toString());
 			return Response.status(Response.Status.NOT_FOUND).entity("The requested item is not found").build();
@@ -103,10 +105,10 @@ public class FileService {
 	@GET
 	@Path("/{imageId}/download")
 	@Produces({"image/*", MediaType.TEXT_PLAIN})
-	public Response downloadImage(@PathParam("imageId") String imageId) {
+	public Response downloadImage(@PathParam(IMAGE_ID) String imageId) {
 		try {
 			File response = FileCacheUtil.fileFromId(Optional.of(imageId));
-			return Response.ok(response, "image/jpg").header("Content-Disposition", format("attachment; filename=%s.jpg", imageId)).build();
+			return Response.ok(response, IMAGE_JPG).header(CONTENT_DISPOSITION, format("attachment; filename=%s.jpg", imageId)).build();
 		} catch (FileNotFoundException e) {
 			logger.warning(e.toString());
 			return Response.status(Response.Status.NOT_FOUND).entity("The requested item is not found").build();
@@ -121,8 +123,8 @@ public class FileService {
 
 			for (String key : formData.keySet()) {
 				for (InputPart inputPart : formData.get(key)) {
-					if (inputPart.getHeaders().containsKey("Content-Disposition")) {
-						List<String> values = Arrays.asList(inputPart.getHeaders().get("Content-Disposition").get(0).split("; "));
+					if (inputPart.getHeaders().containsKey(CONTENT_DISPOSITION)) {
+						List<String> values = Arrays.asList(inputPart.getHeaders().get(CONTENT_DISPOSITION).get(0).split("; "));
 						String filename = null;
 						for (String value : values) {
 							if (value.startsWith("filename=")) {
@@ -136,7 +138,7 @@ public class FileService {
 
 						if (filename != null) {
 							if (inputMap.isEmpty()) {
-								inputMap = new HashMap<String, InputStream>();
+								inputMap = new HashMap<>();
 							}
 							try {
 								inputMap.put(filename, inputPart.getBody(InputStream.class, null));
