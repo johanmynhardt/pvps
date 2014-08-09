@@ -27,9 +27,9 @@ public class ScheduledFilePurge extends TimerTask implements ServletContextListe
 
 	private Timer timer = null;
 
-	private final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis(1);
+	private final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis(5);
 
-	private final FileFilter expiredFiles = new FileFilter() {
+	private final FileFilter EXPIRED_FILE_FILTER = new FileFilter() {
 		@Override
 		public boolean accept(File pathname) {
 			return (pathname.exists()
@@ -61,20 +61,18 @@ public class ScheduledFilePurge extends TimerTask implements ServletContextListe
 
 	@Override
 	public void run() {
-		removeFiles(TMP_DIR.listFiles(expiredFiles));
+		removeFiles(TMP_DIR.listFiles(EXPIRED_FILE_FILTER));
 	}
 
 	private void removeFiles(File[] filesToDelete) {
-		if (filesToDelete == null || filesToDelete.length == 0) {
-			if (context != null) {
-				context.log("No files to purge.");
-			}
-		} else {
+		if (filesToDelete != null && filesToDelete.length > 0) {
 			Map<String, Boolean> removedMap = new TreeMap<>();
 			for (File file : filesToDelete) {
 				removedMap.put(file.getAbsolutePath(), file.delete());
 			}
-			context.log(format("Removed %d files.", removedMap.keySet().size()));
+			if (context != null) {
+				context.log(format("Removed %d files.", removedMap.keySet().size()));
+			}
 		}
 	}
 }
