@@ -1,0 +1,23 @@
+<div ng-hide="displayResult()" class="row">
+    <h2>Upload details</h2>
+
+    <form ng-model="fm" novalidate="novalidate">
+        <div class="row collapse">
+            <div class="expand">
+                <input id="file" type="file" name="file"
+                       class="button"
+                       ng-model="file"
+                       ng-hide="working"
+                       onchange="angular.element(this).scope().change(this)"/>
+            </div>
+        </div>
+        <div class="expand">
+            <button class="button expand" type="submit" ng-click="submit()" ng-show="canUpload()">Submit</button>
+        </div>
+
+    </form>
+</div>
+
+<div id="working" ng-show="working">
+    <img src="img/loading.gif"/>
+</div>

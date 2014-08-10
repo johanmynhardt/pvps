@@ -1,0 +1,15 @@
+#resizedImage {
+    text-align: center;
+    border: 1px solid #333333;
+    background-color: #333333;
+    padding: 1em;
+}
+
+#working {
+    text-align: center;
+    padding: 3em;
+}
+
+#heading {
+    background-image: url('../img/scale.png');
+}

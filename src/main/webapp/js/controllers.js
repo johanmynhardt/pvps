@@ -1,7 +1,21 @@
-var app = angular.module('app', []);
-var appController = app.controller('ApplicationController', function ($scope, $log, $rootScope) {
-    $scope.resizedImage = null;
-    $scope.downloadLocation = null;
+var pvpsControllers = angular.module('pvpsControllers', []);
+
+pvpsControllers.controller('ApplicationController', function ($scope, $location, $log, $route, $routeParams) {
+
+    $scope.getImageEndpoint = function (imageId) {
+        return 'r/file/' + imageId + '/view';
+    };
+
+    $scope.getDownloadEndpoint = function (imageId) {
+        return 'r/file/' + imageId + '/download';
+    };
+
+    $scope.getResultEndpoint = function (imageId) {
+        return '/' + imageId + '/result';
+    };
+
+    $scope.resizedImage = $routeParams.imageId ? $scope.getImageEndpoint($routeParams.imageId) : null;
+    $scope.downloadLocation = $routeParams.imageId ? $scope.getDownloadEndpoint($routeParams.imageId) : null;
     $scope.working = false;
 
     $scope.files = [];
@@ -37,9 +51,11 @@ var appController = app.controller('ApplicationController', function ($scope, $l
             processData: false,
             contentType: false,
             success: function (result) {
-                $scope.resizedImage = 'r/file/' + result.properties.images[0] + '/view';
-                $scope.downloadLocation = 'r/file/' + result.properties.images[0] + '/download';
+                var imageId = result.properties.images[0];
+                $scope.resizedImage = $scope.getImageEndpoint(imageId);
+                $scope.downloadLocation = $scope.getDownloadEndpoint(imageId);
                 $scope.working = false;
+                $location.path($scope.getResultEndpoint(imageId));
                 $scope.$apply();
             },
             error: function (result) {
@@ -54,5 +70,6 @@ var appController = app.controller('ApplicationController', function ($scope, $l
         $scope.resizedImage = null;
         $scope.downloadLocation = null;
         $scope.working = false;
+        $location.path('/upload');
     }
 });
