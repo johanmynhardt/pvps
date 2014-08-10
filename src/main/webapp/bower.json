@@ -18,7 +18,8 @@
   ],
   "dependencies":{
       "foundation": "5.3.3",
-      "angular":"1.2.21"
+      "angular":"1.2.21",
+      "angular-route":"1.2.21"
 
   }
 }
