@@ -8,6 +8,8 @@ import java.io.InputStream;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.io.ByteSource;
+
 import com.sun.org.apache.bcel.internal.generic.IFNE;
 
 import static java.lang.String.format;
@@ -21,21 +23,23 @@ public class FileCacheUtil {
 	public static final File TMP_DIR = new File("/tmp");
 	public static final String IMG_FILE_REGEX = "(" + TEMP_PREFIX + ")\\d*(" + TEMP_SUFFIX + ")";
 
-	public static File cacheInputImage(InputStream inputStream) throws IOException {
-		File result = File.createTempFile(TEMP_PREFIX, TEMP_SUFFIX, TMP_DIR);
+	public static File cacheInputImage(final InputStream inputStream) throws IOException {
+		return cacheInputImage(new ByteSource() {
+			@Override
+			public InputStream openStream() throws IOException {
+				return inputStream;
+			}
+		});
+	}
 
-		FileOutputStream fileOutputStream = new FileOutputStream(result);
+	private static File getTempFile() throws IOException {
+		return File.createTempFile(TEMP_PREFIX, TEMP_SUFFIX, TMP_DIR);
+	}
 
-		byte[] buff = new byte[1024];
-		int len;
-		while ((len = inputStream.read(buff)) > -1) {
-			fileOutputStream.write(buff, 0, len);
-		}
-
-		fileOutputStream.close();
-		inputStream.close();
-
-		return result.getAbsoluteFile();
+	public static File cacheInputImage(ByteSource byteSource) throws IOException {
+		final File tempFile = getTempFile();
+		byteSource.copyTo(new FileOutputStream(tempFile));
+		return tempFile.getAbsoluteFile();
 	}
 
 	public static Optional<String> imageIdFromFile(File file) {

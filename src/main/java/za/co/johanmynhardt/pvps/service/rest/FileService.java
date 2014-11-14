@@ -29,6 +29,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.slf4j.LoggerFactory;
+
 import za.co.johanmynhardt.pvps.service.ImageService;
 import za.co.johanmynhardt.pvps.service.impl.ImageServiceImpl;
 import za.co.johanmynhardt.pvps.service.model.JsonResponse;
@@ -41,7 +43,7 @@ public class FileService {
 	public static final String IMAGE_ID = "imageId";
 	public static final String IMAGE_JPG = "image/jpg";
 	public static final String CONTENT_DISPOSITION = "Content-Disposition";
-	private static Logger logger = Logger.getLogger(FileService.class.getName());
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FileService.class);
 
 	private ImageService imageService = new ImageServiceImpl();
 	private Gson gson = new GsonBuilder().create();
@@ -84,7 +86,7 @@ public class FileService {
 		String json = gson.toJson(response, new TypeToken<JsonResponse>() {
 		}.getType());
 
-		logger.log(Level.INFO, "Returning JsonResponse: {0}", json);
+		LOG.debug("Returning JsonResponse: {}", json);
 
 		return Response.ok(json, MediaType.APPLICATION_JSON_TYPE).build();
 	}
@@ -97,7 +99,7 @@ public class FileService {
 			File response = FileCacheUtil.fileFromId(Optional.of(imageId));
 			return Response.ok(response, IMAGE_JPG).build();
 		} catch (FileNotFoundException e) {
-			logger.warning(e.toString());
+			LOG.error("Error", e);
 			return Response.status(Response.Status.NOT_FOUND).entity("The requested item is not found").build();
 		}
 	}
@@ -110,7 +112,7 @@ public class FileService {
 			File response = FileCacheUtil.fileFromId(Optional.of(imageId));
 			return Response.ok(response, IMAGE_JPG).header(CONTENT_DISPOSITION, format("attachment; filename=%s.jpg", imageId)).build();
 		} catch (FileNotFoundException e) {
-			logger.warning(e.toString());
+			LOG.error("Error", e);
 			return Response.status(Response.Status.NOT_FOUND).entity("The requested item is not found").build();
 		}
 	}
