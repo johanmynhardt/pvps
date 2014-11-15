@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
 import org.im4java.core.IMOperation;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -22,7 +23,7 @@ import za.co.johanmynhardt.pvps.service.util.FileCacheUtil;
  * @author Johan Mynhardt
  */
 public class ImageServiceImpl implements ImageService {
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ImageServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ImageServiceImpl.class);
 
 	@Override
 	public Optional<String> resizeImage(InputStream inputStream) throws IOException {

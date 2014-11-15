@@ -1,17 +1,15 @@
 package za.co.johanmynhardt.pvps.service.rest;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -22,28 +20,30 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
-import org.slf4j.LoggerFactory;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.String.format;
 
 import za.co.johanmynhardt.pvps.service.ImageService;
 import za.co.johanmynhardt.pvps.service.impl.ImageServiceImpl;
 import za.co.johanmynhardt.pvps.service.model.JsonResponse;
 import za.co.johanmynhardt.pvps.service.util.FileCacheUtil;
 
-import static java.lang.String.format;
-
 @Path("/file")
 public class FileService {
 	public static final String IMAGE_ID = "imageId";
 	public static final String IMAGE_JPG = "image/jpg";
 	public static final String CONTENT_DISPOSITION = "Content-Disposition";
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FileService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FileService.class);
 
 	private ImageService imageService = new ImageServiceImpl();
 	private Gson gson = new GsonBuilder().create();

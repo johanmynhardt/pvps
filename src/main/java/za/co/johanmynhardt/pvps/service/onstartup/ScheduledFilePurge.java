@@ -1,5 +1,7 @@
 package za.co.johanmynhardt.pvps.service.onstartup;
 
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Map;
@@ -23,6 +25,7 @@ import static za.co.johanmynhardt.pvps.service.util.FileCacheUtil.TMP_DIR;
  */
 @WebListener("FilePurge Scheduler")
 public class ScheduledFilePurge extends TimerTask implements ServletContextListener {
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ScheduledFilePurge.class);
 	private ServletContext context = null;
 
 	private Timer timer = null;
@@ -70,9 +73,8 @@ public class ScheduledFilePurge extends TimerTask implements ServletContextListe
 			for (File file : filesToDelete) {
 				removedMap.put(file.getAbsolutePath(), file.delete());
 			}
-			if (context != null) {
-				context.log(format("Removed %d files.", removedMap.keySet().size()));
-			}
+
+			LOG.debug("Removed {} files.", removedMap.keySet().size());
 		}
 	}
 }
