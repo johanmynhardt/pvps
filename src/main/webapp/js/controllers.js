@@ -18,6 +18,9 @@ pvpsControllers.controller('ApplicationController', function ($scope, $location,
     $scope.downloadLocation = $routeParams.imageId ? $scope.getDownloadEndpoint($routeParams.imageId) : null;
     $scope.working = false;
 
+    $scope.resizeSpec = ["Salon", "APA"];
+    $scope.selectedResizeSpec = "APA";
+
     $scope.files = [];
 
     $scope.change = function (event) {
@@ -43,6 +46,11 @@ pvpsControllers.controller('ApplicationController', function ($scope, $location,
         var file = $scope.files[0];
 
         formData.append("file", file);
+        formData.append("resizeSpec", $scope.selectedResizeSpec);
+
+        $log.debug("resizeSpec = %o", $scope.selectedResizeSpec);
+
+        $log.debug("formData: %o", formData);
 
         $.ajax({
             url: "r/file/upload",

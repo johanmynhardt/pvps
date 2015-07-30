@@ -12,8 +12,23 @@
             </div>
         </div>
         <div class="expand">
+            <div class="row collapse">
+                <div class="large-2 columns">
+                    <span class="prefix">Resize for Category</span>
+                </div>
+                <div class="large-10 columns">
+                    <select ng-options="spec for spec in resizeSpec" ng-model="selectedResizeSpec"></select>
+                </div>
+            </div>
+        </div>
+        <div class="expand">
             <button class="button expand" type="submit" ng-click="submit()" ng-show="canUpload()">Submit</button>
         </div>
+
+        <dl>
+            <dt>APA</dt> <dd>1280x800px, max 1.5M</dd>
+            <dt>Salon</dt> <dd>1024x768px, max 0.5M</dd>
+        </dl>
 
     </form>
 </div>

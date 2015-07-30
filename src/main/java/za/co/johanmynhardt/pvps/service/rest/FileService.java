@@ -18,6 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import java.io.File;
@@ -30,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.lang.String.format;
 
@@ -60,11 +62,12 @@ public class FileService {
 	public Response consumeUpload(MultipartFormDataInput input) {
 		Map<String, InputStream> attachmentMap = FormUtil.getInputStreams(input);
 
-		List<String> uploadedImages = new ArrayList<String>();
-		try {
+		List<String> uploadedImages = new ArrayList<>();
 
+		String resizeSpec = FormUtil.getResizeSpec(input);
+		try {
 			for (InputStream inputStream : attachmentMap.values()) {
-				Optional<String> imageId = imageService.resizeImage(inputStream);
+				Optional<String> imageId = imageService.resizeImage(inputStream, resizeSpec);
 				if (imageId.isPresent()) {
 					uploadedImages.add(imageId.get());
 				}
@@ -119,9 +122,12 @@ public class FileService {
 
 	private static class FormUtil {
 		public static Map<String, InputStream> getInputStreams(MultipartFormDataInput form) {
+
 			Map<String, InputStream> inputMap = Collections.emptyMap();
 
 			Map<String, List<InputPart>> formData = form.getFormDataMap();
+
+			LOG.debug("formData keys = {}", formData.keySet());
 
 			for (String key : formData.keySet()) {
 				for (InputPart inputPart : formData.get(key)) {
@@ -152,6 +158,19 @@ public class FileService {
 				}
 			}
 			return inputMap;
+		}
+
+		public static String getResizeSpec(MultipartFormDataInput input) {
+			if (input.getFormDataMap().containsKey("resizeSpec")) {
+				final List<InputPart> resizeSpec = input.getFormDataMap().get("resizeSpec");
+
+				try {
+					return resizeSpec.get(0).getBodyAsString();
+				} catch (IOException e) {
+					LOG.error("Error ", e);
+				}
+			}
+			return "APA";
 		}
 	}
 }

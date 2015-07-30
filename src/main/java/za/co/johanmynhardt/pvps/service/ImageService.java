@@ -3,33 +3,44 @@ package za.co.johanmynhardt.pvps.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
 /**
  * @author Johan Mynhardt
  */
 public interface ImageService {
 
-	public File imageFile(InputStream inputStream) throws IOException;
-	public Optional<String> resizeImage(InputStream inputStream) throws IOException;
-	public Optional<String> resizeImage(InputStream inputStream, ResizeConfiguration resizeConfiguration) throws IOException;
+	File imageFile(InputStream inputStream) throws IOException;
+	Optional<String> resizeImage(InputStream inputStream, String resizeConfigurationKey) throws IOException;
+	Optional<String> resizeImage(InputStream inputStream) throws IOException;
+	Optional<String> resizeImage(InputStream inputStream, ResizeConfiguration resizeConfiguration) throws IOException;
 
-	public interface ResizeConfiguration {
-		public Integer getWidth();
-		public Integer getHeight();
-		public Integer getBorderSize();
-		public Integer getMaxKiloBytes();
-		public String getBorderColour();
+	interface ResizeConfiguration {
+		String getKey();
+		Integer getWidth();
+		Integer getHeight();
+		Integer getBorderSize();
+		Integer getMaxKiloBytes();
+		String getBorderColour();
 	}
 
-	public static class DefaultConfigurations {
+	class DefaultConfigurations {
+
+		public static final List<ResizeConfiguration> availableConfigurations = Lists.newArrayList(getSmall4to3(), getApa1280to800());
 
 		private static int defaultBorderSize = 2;
 		private static String defaultBorderColour = "white";
 
 		public static ResizeConfiguration getSmall4to3() {
 			return new ResizeConfiguration() {
+				@Override
+				public String getKey() {
+					return "Salon";
+				}
+
 				@Override
 				public Integer getWidth() {
 					return 1024;
@@ -59,6 +70,11 @@ public interface ImageService {
 
 		public static ResizeConfiguration getApa1280to800() {
 			return new ResizeConfiguration() {
+				@Override
+				public String getKey() {
+					return "APA";
+				}
+
 				@Override
 				public Integer getWidth() {
 					return 1280;
