@@ -18,7 +18,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import java.io.File;
@@ -31,13 +30,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.lang.String.format;
 
 import za.co.johanmynhardt.pvps.service.ImageService;
 import za.co.johanmynhardt.pvps.service.impl.ImageServiceImpl;
-import za.co.johanmynhardt.pvps.service.model.JsonResponse;
+import za.co.johanmynhardt.pvps.model.JsonResponse;
 import za.co.johanmynhardt.pvps.service.util.FileCacheUtil;
 
 @Path("/file")

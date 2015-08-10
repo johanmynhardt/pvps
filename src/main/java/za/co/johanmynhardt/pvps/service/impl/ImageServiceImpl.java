@@ -29,13 +29,10 @@ public class ImageServiceImpl implements ImageService {
 
 	@Override
 	public Optional<String> resizeImage(InputStream inputStream, final String resizeConfigurationKey) throws IOException {
-		final Optional<ResizeConfiguration> tryFind = Iterables.tryFind(DefaultConfigurations.availableConfigurations, new Predicate<ResizeConfiguration>() {
-			@Override
-			public boolean apply(ResizeConfiguration input) {
-				return input.getKey().equals(resizeConfigurationKey);
-			}
-		});
-		return resizeImage(inputStream, tryFind.orNull());
+		final java.util.Optional<ResizeConfiguration> first = DefaultConfigurations.availableConfigurations.stream()
+				.filter(input -> input.getKey().equals(resizeConfigurationKey))
+				.findFirst();
+		return resizeImage(inputStream, first.orElse(null));
 	}
 
 	@Override

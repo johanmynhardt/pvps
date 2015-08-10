@@ -49,6 +49,7 @@ public class ScheduledFilePurge extends TimerTask implements ServletContextListe
 		}
 		timer = new Timer("FilePurgeTimer");
 		timer.scheduleAtFixedRate(this, EXPIRATION_TIME, EXPIRATION_TIME);
+		LOG.info("Initialised FilePurgeTimer.");
 	}
 
 	@Override
@@ -74,7 +75,7 @@ public class ScheduledFilePurge extends TimerTask implements ServletContextListe
 				removedMap.put(file.getAbsolutePath(), file.delete());
 			}
 
-			LOG.debug("Removed {} files.", removedMap.keySet().size());
+			LOG.info("Removed {} files.", removedMap.keySet().size());
 		}
 	}
 }
