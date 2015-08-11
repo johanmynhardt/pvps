@@ -4,10 +4,6 @@ import static java.lang.String.format;
 import static za.co.johanmynhardt.pvps.service.util.FileCacheUtil.cacheInputImage;
 import static za.co.johanmynhardt.pvps.service.util.FileCacheUtil.imageIdFromFile;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
 import org.im4java.core.IMOperation;
@@ -20,6 +16,7 @@ import za.co.johanmynhardt.pvps.service.util.FileCacheUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 /**
  * @author Johan Mynhardt

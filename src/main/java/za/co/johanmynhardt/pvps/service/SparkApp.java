@@ -1,10 +1,9 @@
 package za.co.johanmynhardt.pvps.service;
 
+import static com.google.common.collect.ImmutableMap.of;
 import static spark.Spark.get;
 import static spark.Spark.post;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteSink;
 import com.google.common.io.ByteSource;
 
@@ -30,6 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -49,44 +49,15 @@ public class SparkApp implements SparkApplication {
         get("/spark/ping", (request, response) -> "pong!");
 
         post("/spark/upload", "multipart/form-data", (request, response) -> {
-            MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
-            request.raw().setAttribute("org.eclipse.multipartConfig", multipartConfigElement);
-            request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
+            configureMultipart(request);
 
-            request.raw().getAttribute("fff");
+            final List<String> uploadedImages = processUpload(request);
 
-            List<FileInfo> infos = RequestUtils.fileInfosFromParts(request);
-            String resizeSpec = RequestUtils.resizeSpecFromRequest(request);
-
-            LOG.debug("resizeSpec = {}", resizeSpec);
-
-            final List<String> uploadedImages = infos.stream()
-                    .map(fileInfo -> {
-                        try {
-                            return imageService.resizeImage(fileInfo.getInputStream(request), resizeSpec);
-                        } catch (IOException | ServletException e) {
-                            LOG.error("Error ", e);
-                            return Optional.<String>absent();
-                        }
-                    })
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toList());
-
-            JsonResponse jresponse = new JsonResponse()
-                    .setStatus(200)
-                    .setMessage("success")
-                    .setProperties(
-                            new ImmutableMap.Builder<String, Object>()
-                                    .put("images", uploadedImages)
-                                    .build()
-                    );
-
+            JsonResponse jresponse = new JsonResponse().setStatus(200).setMessage("success").setProperties(of("images", uploadedImages));
             response.type("application/json");
             response.body(jresponse.toString());
 
             return response.body();
-
         });
 
         get("/spark/:imageId/view", (request, response) -> {
@@ -103,6 +74,36 @@ public class SparkApp implements SparkApplication {
             return "";
         });
 
+    }
+
+    private List<String> processUpload(Request request) throws IOException, ServletException {
+        List<FileInfo> infos = RequestUtils.fileInfosFromParts(request);
+        String resizeSpec = RequestUtils.resizeSpecFromRequest(request);
+
+        LOG.debug("resizeSpec = {}", resizeSpec);
+
+        return infos.stream()
+                .map(fileInfo -> {
+                    try {
+                        return imageService.resizeImage(fileInfo.getInputStream(request), resizeSpec);
+                    } catch (IOException | ServletException e) {
+                        LOG.error("Error ", e);
+                        return Optional.empty();
+                    }
+                })
+                .filter(Optional::isPresent)
+                .map(o -> ((String) o.get()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * This is to support file-upload in Jetty and Spark Java.
+     * Tomcat is configured using context.xml
+     */
+    private void configureMultipart(Request request) {
+        MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
+        //request.raw().setAttribute("org.eclipse.multipartConfig", multipartConfigElement);
+        request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
     }
 
     void fileResponse(Response response, String imageId, boolean download) throws IOException {
