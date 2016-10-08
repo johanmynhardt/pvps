@@ -1,12 +1,13 @@
 package za.co.johanmynhardt.pvps.service;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.Lists;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
+import java.util.Optional;
 
 /**
  * @author Johan Mynhardt
@@ -14,7 +15,6 @@ import com.google.common.collect.Lists;
 public interface ImageService {
 
 	File imageFile(InputStream inputStream) throws IOException;
-	Optional<String> resizeImage(InputStream inputStream, String resizeConfigurationKey) throws IOException;
 	Optional<String> resizeImage(InputStream inputStream) throws IOException;
 	Optional<String> resizeImage(InputStream inputStream, ResizeConfiguration resizeConfiguration) throws IOException;
 
@@ -27,79 +27,84 @@ public interface ImageService {
 		String getBorderColour();
 	}
 
+	class ResizeConfigurationWithDefaults implements ResizeConfiguration {
+		String key;
+		Integer width;
+		Integer height;
+		Integer borderSize;
+		Integer maxKiloBytes;
+		String borderColour;
+
+		public ResizeConfigurationWithDefaults(String key, Integer width, Integer height, Integer borderSize, Integer maxKiloBytes, String borderColour) {
+			this.key = key;
+			this.width = width;
+			this.height = height;
+			this.borderSize = borderSize;
+			this.maxKiloBytes = maxKiloBytes;
+			this.borderColour = borderColour;
+		}
+
+		@Override
+		public String getKey() {
+			return key;
+		}
+
+		@Override
+		public Integer getWidth() {
+			return width;
+		}
+
+		@Override
+		public Integer getHeight() {
+			return height;
+		}
+
+		@Override
+		public Integer getBorderSize() {
+			return borderSize;
+		}
+
+		@Override
+		public Integer getMaxKiloBytes() {
+			return maxKiloBytes;
+		}
+
+		@Override
+		public String getBorderColour() {
+			return borderColour;
+		}
+
+		@Override
+		public String toString() {
+			return MoreObjects.toStringHelper(this)
+					.add("key", this.key)
+					.add("width", this.width)
+					.add("height", this.height)
+					.add("borderColour", this.borderColour)
+					.add("borderSize", this.borderSize)
+					.add("maxKiloBytes", this.maxKiloBytes).toString();
+		}
+	}
+
 	class DefaultConfigurations {
 
 		public static final List<ResizeConfiguration> availableConfigurations = Lists.newArrayList(getSmall4to3(), getApa1280to800());
 
-		private static int defaultBorderSize = 2;
-		private static String defaultBorderColour = "white";
+		private static final int defaultBorderSize = 2;
+		private static final String defaultBorderColour = "white";
 
 		public static ResizeConfiguration getSmall4to3() {
-			return new ResizeConfiguration() {
-				@Override
-				public String getKey() {
-					return "Salon";
-				}
-
-				@Override
-				public Integer getWidth() {
-					return 1024;
-				}
-
-				@Override
-				public Integer getHeight() {
-					return 768;
-				}
-
-				@Override
-				public Integer getBorderSize() {
-					return defaultBorderSize;
-				}
-
-				@Override
-				public Integer getMaxKiloBytes() {
-					return 500;
-				}
-
-				@Override
-				public String getBorderColour() {
-					return defaultBorderColour;
-				}
-			};
+			return new ResizeConfigurationWithDefaults("Salon", 1024, 768, defaultBorderSize, 500, defaultBorderColour);
 		}
 
 		public static ResizeConfiguration getApa1280to800() {
-			return new ResizeConfiguration() {
-				@Override
-				public String getKey() {
-					return "APA";
-				}
+			return new ResizeConfigurationWithDefaults("APA", 1280, 800, defaultBorderSize, 1500, defaultBorderColour);
+		}
 
-				@Override
-				public Integer getWidth() {
-					return 1280;
-				}
-
-				@Override
-				public Integer getHeight() {
-					return 800;
-				}
-
-				@Override
-				public Integer getBorderSize() {
-					return defaultBorderSize;
-				}
-
-				@Override
-				public Integer getMaxKiloBytes() {
-					return 1500;
-				}
-
-				@Override
-				public String getBorderColour() {
-					return defaultBorderColour;
-				}
-			};
+		public static Optional<ResizeConfiguration> findForKey(String key) {
+			return DefaultConfigurations.availableConfigurations.stream()
+					.filter(input -> input.getKey().equals(key))
+					.findFirst();
 		}
 	}
 }

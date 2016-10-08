@@ -1,18 +1,16 @@
 package za.co.johanmynhardt.pvps.service.util;
 
+import static java.lang.String.format;
+
+import com.google.common.base.Preconditions;
+import com.google.common.io.ByteSource;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.io.ByteSource;
-
-import com.sun.org.apache.bcel.internal.generic.IFNE;
-
-import static java.lang.String.format;
+import java.util.Optional;
 
 /**
  * @author Johan Mynhardt
@@ -46,7 +44,7 @@ public class FileCacheUtil {
 		final String fileName = file.getName();
 		if (fileName.matches(IMG_FILE_REGEX)) {
 			return Optional.of(fileName.substring(TEMP_PREFIX.length(), fileName.length() - TEMP_SUFFIX.length()));
-		} else return Optional.absent();
+		} else return Optional.empty();
 	}
 
 	public static File fileFromId(Optional<String> imageId) throws FileNotFoundException {

@@ -1,0 +1,19 @@
+<configuration debug="true">
+
+    <jmxConfigurator />
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>PVPS %d %-5level [%thread] %logger{10}.%method\(\) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="httpclient.wire" level="TRACE" />
+    <logger name="spark" level="TRACE" />
+    <logger name="za.co.johanmynhardt" level="DEBUG" />
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>
+

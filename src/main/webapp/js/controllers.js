@@ -3,11 +3,11 @@ var pvpsControllers = angular.module('pvpsControllers', []);
 pvpsControllers.controller('ApplicationController', function ($scope, $location, $log, $route, $routeParams) {
 
     $scope.getImageEndpoint = function (imageId) {
-        return 'r/file/' + imageId + '/view';
+        return 'spark/' + imageId + '/view';
     };
 
     $scope.getDownloadEndpoint = function (imageId) {
-        return 'r/file/' + imageId + '/download';
+        return 'spark/' + imageId + '/download';
     };
 
     $scope.getResultEndpoint = function (imageId) {
@@ -20,6 +20,8 @@ pvpsControllers.controller('ApplicationController', function ($scope, $location,
 
     $scope.resizeSpec = ["Salon", "APA"];
     $scope.selectedResizeSpec = "APA";
+    $scope.borderWidth = 1;
+    $scope.widths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     $scope.files = [];
 
@@ -47,18 +49,20 @@ pvpsControllers.controller('ApplicationController', function ($scope, $location,
 
         formData.append("file", file);
         formData.append("resizeSpec", $scope.selectedResizeSpec);
+        formData.append("borderWidth", $scope.borderWidth);
 
         $log.debug("resizeSpec = %o", $scope.selectedResizeSpec);
 
         $log.debug("formData: %o", formData);
 
         $.ajax({
-            url: "r/file/upload",
+            url: "spark/upload",
             type: "POST",
             data: formData,
             processData: false,
             contentType: false,
             success: function (result) {
+                console.log("result: %o", result);
                 var imageId = result.properties.images[0];
                 $scope.resizedImage = $scope.getImageEndpoint(imageId);
                 $scope.downloadLocation = $scope.getDownloadEndpoint(imageId);
