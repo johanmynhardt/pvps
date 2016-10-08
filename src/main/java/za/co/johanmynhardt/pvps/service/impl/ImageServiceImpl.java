@@ -25,21 +25,13 @@ public class ImageServiceImpl implements ImageService {
 	private static final Logger LOG = LoggerFactory.getLogger(ImageServiceImpl.class);
 
 	@Override
-	public Optional<String> resizeImage(InputStream inputStream, final String resizeConfigurationKey) throws IOException {
-		final java.util.Optional<ResizeConfiguration> first = DefaultConfigurations.availableConfigurations.stream()
-				.filter(input -> input.getKey().equals(resizeConfigurationKey))
-				.findFirst();
-		return resizeImage(inputStream, first.orElse(null));
-	}
-
-	@Override
 	public Optional<String> resizeImage(InputStream inputStream) throws IOException {
 		return resizeImage(inputStream, DefaultConfigurations.getApa1280to800());
 	}
 
 	@Override
 	public Optional<String> resizeImage(InputStream inputStream, ResizeConfiguration resizeConfiguration) throws IOException {
-		LOG.info("Resizing for configuration={}", resizeConfiguration.getKey());
+		LOG.info("Resizing for configuration={}, {}, {}px", resizeConfiguration.getKey(), resizeConfiguration.getBorderColour(), resizeConfiguration.getBorderSize());
 		File result = cacheInputImage(inputStream);
 
 		IMOperation operation = new IMOperation();

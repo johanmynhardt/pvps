@@ -20,6 +20,8 @@ pvpsControllers.controller('ApplicationController', function ($scope, $location,
 
     $scope.resizeSpec = ["Salon", "APA"];
     $scope.selectedResizeSpec = "APA";
+    $scope.borderWidth = 1;
+    $scope.widths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     $scope.files = [];
 
@@ -47,6 +49,7 @@ pvpsControllers.controller('ApplicationController', function ($scope, $location,
 
         formData.append("file", file);
         formData.append("resizeSpec", $scope.selectedResizeSpec);
+        formData.append("borderWidth", $scope.borderWidth);
 
         $log.debug("resizeSpec = %o", $scope.selectedResizeSpec);
 
