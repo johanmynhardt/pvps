@@ -88,7 +88,8 @@ public interface ImageService {
 
 	class DefaultConfigurations {
 
-		public static final List<ResizeConfiguration> availableConfigurations = Lists.newArrayList(getSmall4to3(), getApa1280to800());
+		public static final List<ResizeConfiguration> availableConfigurations = Lists.newArrayList(getSmall4to3(), getApa1280to800(), getApa1200to1920(),
+		                                                                                           getHD1920to1080());
 
 		private static final int defaultBorderSize = 2;
 		private static final String defaultBorderColour = "white";
@@ -99,6 +100,14 @@ public interface ImageService {
 
 		public static ResizeConfiguration getApa1280to800() {
 			return new ResizeConfigurationWithDefaults("APA", 1280, 800, defaultBorderSize, 1500, defaultBorderColour);
+		}
+
+		public static ResizeConfiguration getApa1200to1920() {
+			return new ResizeConfigurationWithDefaults("APANew", 1200, 800, defaultBorderSize, 2000, defaultBorderColour);
+		}
+
+		public static ResizeConfiguration getHD1920to1080() {
+			return new ResizeConfigurationWithDefaults("HD", 1920, 1080, defaultBorderSize, 2000, defaultBorderColour);
 		}
 
 		public static Optional<ResizeConfiguration> findForKey(String key) {

@@ -18,7 +18,7 @@ pvpsControllers.controller('ApplicationController', function ($scope, $location,
     $scope.downloadLocation = $routeParams.imageId ? $scope.getDownloadEndpoint($routeParams.imageId) : null;
     $scope.working = false;
 
-    $scope.resizeSpec = ["Salon", "APA"];
+    $scope.resizeSpec = ["Salon", "APA", "APANew", "HD"];
     $scope.selectedResizeSpec = "APA";
     $scope.borderWidth = 1;
     $scope.widths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
